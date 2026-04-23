@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "beforeUserPromptSubmit": [
+      {
+        "name": "scope-reminder",
+        "command": "bash .claude/hooks/scope-reminder.sh",
+        "timeout": 5000
+      }
+    ],
+    "afterToolUse": [
+      {
+        "name": "scope-guard",
+        "command": "bash .claude/hooks/scope-guard.sh",
+        "timeout": 10000
+      },
+      {
+        "name": "backend-validation",
+        "command": "bash .claude/hooks/backend-validation.sh",
+        "timeout": 30000
+      }
+    ]
+  }
+}
