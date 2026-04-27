@@ -1,0 +1,1 @@
+- [Backend Architecture Overview](project_architecture.md) — routes/CRUD/models/test patterns; inline queries, superuser branching, real-DB tests

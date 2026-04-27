@@ -1,7 +1,8 @@
 import uuid
 from typing import Any
 
-from sqlmodel import Session, select
+from sqlalchemy import or_
+from sqlmodel import Session, col, func, select
 
 from app.core.security import get_password_hash, verify_password
 from app.models import Item, ItemCreate, User, UserCreate, UserUpdate
@@ -58,6 +59,34 @@ def authenticate(*, session: Session, email: str, password: str) -> User | None:
         session.commit()
         session.refresh(db_user)
     return db_user
+
+
+def get_items(
+    *,
+    session: Session,
+    owner_id: uuid.UUID | None,
+    skip: int,
+    limit: int,
+    search: str | None = None,
+) -> tuple[int, list[Item]]:
+    statement = select(Item).order_by(col(Item.created_at).desc())
+    count_statement = select(func.count()).select_from(Item)
+
+    if owner_id is not None:
+        statement = statement.where(Item.owner_id == owner_id)
+        count_statement = count_statement.where(Item.owner_id == owner_id)
+
+    if search:
+        search_filter = or_(
+            col(Item.title).ilike(f"%{search}%"),
+            col(Item.description).ilike(f"%{search}%"),
+        )
+        statement = statement.where(search_filter)
+        count_statement = count_statement.where(search_filter)
+
+    count = session.exec(count_statement).one()
+    items = session.exec(statement.offset(skip).limit(limit)).all()
+    return count, list(items)
 
 
 def create_item(*, session: Session, item_in: ItemCreate, owner_id: uuid.UUID) -> Item:
