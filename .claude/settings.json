@@ -1,22 +1,36 @@
 {
   "hooks": {
-    "beforeUserPromptSubmit": [
+    "UserPromptSubmit": [
       {
-        "name": "scope-reminder",
-        "command": "bash .claude/hooks/scope-reminder.sh",
-        "timeout": 5000
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && bash .claude/hooks/scope-reminder.sh'",
+            "timeout": 5000
+          }
+        ]
       }
     ],
-    "afterToolUse": [
+    "PostToolUse": [
       {
-        "name": "scope-guard",
-        "command": "bash .claude/hooks/scope-guard.sh",
-        "timeout": 10000
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && bash .claude/hooks/scope-guard.sh'",
+            "timeout": 10000
+          }
+        ]
       },
       {
-        "name": "backend-validation",
-        "command": "bash .claude/hooks/backend-validation.sh",
-        "timeout": 30000
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && bash .claude/hooks/backend-validation.sh'",
+            "timeout": 30000
+          }
+        ]
       }
     ]
   }
